@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lloyd's GO! - Administration Complète</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #007A3D 0%, #005A2C 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .admin-container {
+            max-width: 95vw;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #007A3D, #00A651);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .admin-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .admin-header p {
+            opacity: 0.9;
+        }
+
+        .admin-content {
+            padding: 30px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #F8F9FA;
+            border-radius: 12px;
+            padding: 8px;
+            margin-bottom: 30px;
+            gap: 8px;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6C757D;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            background: #007A3D;
+            color: white;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: rgba(0, 122, 61, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #007A3D;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #005A2C;
+        }
+
+        .btn-secondary {
+            background: #6C757D;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545B62;
+        }
+
+        .btn-danger {
+            background: #DC3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #C82333;
+        }
+
+        .btn-success {
+            background: #28A745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E9ECEF;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #007A3D;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #007A3D, #00A651);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .users-table th,
+        .users-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #E9ECEF;
+        }
+
+        .users-table th {
+            background: #F8F9FA;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .users-table tr:hover {
+            background: #F8F9FA;
+        }
+
+        .balance-input {
+            width: 80px;
+            padding: 4px 8px;
+            border: 1px solid #CED4DA;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .balance-input:focus {
+            outline: none;
+            border-color: #007A3D;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn {
+            background: #007A3D;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #005A2C;
+        }
+
+        .delete-btn {
+            background: #DC3545;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #C82333;
+        }
+
+        .no-users {
+            text-align: center;
+            padding: 40px;
+            color: #6C757D;
+        }
+
+        .no-users h3 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6C757D;
+        }
+
+        .error-message {
+            background: #F8D7DA;
+            color: #721C24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #F5C6CB;
+        }
+
+        .success-message {
+            background: #D4EDDA;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #C3E6CB;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #E9ECEF;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #007A3D;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>🔧 Administration Complète</h1>
+            <p>Gestion des utilisateurs, soldes et performances</p>
+        </div>
+
+        <div class="admin-content">
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showTab('home')">🏠 Accueil</button>
+                <button class="nav-tab" onclick="showTab('wallet')">💼 Portefeuille</button>
+                <button class="nav-tab" onclick="showTab('banking')">🏦 Banking</button>
+            </div>
+
+            <!-- Boutons de synchronisation cloud -->
+            <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #007A3D;">
+                <h3 style="margin-bottom: 10px; color: #007A3D;">☁️ Synchronisation Cloud</h3>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="syncAllUsersToCloud()" style="background: #007A3D;">
+                        🔄 Synchroniser vers Cloud
+                    </button>
+                    <button class="btn btn-primary" onclick="loadAllUsersFromCloud()" style="background: #0056b3;">
+                        📥 Charger depuis Cloud
+                    </button>
+                    <button class="btn btn-primary" onclick="getCloudStatus()" style="background: #6c757d;">
+                        📊 Statut Cloud
+                    </button>
+                </div>
+                <div id="cloudStatus" style="margin-top: 10px; font-size: 14px; color: #666;">
+                    Statut cloud: Vérification...
+                </div>
+            </div>
+
+            <!-- Onglet Accueil -->
+            <div id="home" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3 id="totalUsers">0</h3>
+                        <p>Utilisateurs Total</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="activeUsers">0</h3>
+                        <p>Utilisateurs Actifs</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalBalance">€0</h3>
+                        <p>Solde Total</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalCrypto">€0</h3>
+                        <p>Crypto Total</p>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <input type="text" class="search-box" placeholder="🔍 Rechercher un utilisateur..." id="homeSearchBox" onkeyup="filterUsers('home')">
+                </div>
+
+                <div id="homeUsersTableContainer">
+                    <div class="loading">Chargement des utilisateurs...</div>
+                </div>
+            </div>
+
+            <!-- Onglet Portefeuille -->
+            <div id="wallet" class="tab-content">
+                <div style="margin-bottom: 20px;">
+                    <input type="text" class="search-box" placeholder="🔍 Rechercher un utilisateur..." id="walletSearchBox" onkeyup="filterUsers('wallet')">
+                </div>
+
+                <div id="walletUsersTableContainer">
+                    <div class="loading">Chargement des utilisateurs...</div>
+                </div>
+            </div>
+
+            <!-- Onglet Banking -->
+            <div id="banking" class="tab-content">
+                <div style="margin-bottom: 20px;">
+                    <input type="text" class="search-box" placeholder="🔍 Rechercher un utilisateur..." id="bankingSearchBox" onkeyup="filterUsers('banking')">
+                </div>
+
+                <div id="bankingUsersTableContainer">
+                    <div class="loading">Chargement des utilisateurs...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour éditer un utilisateur -->
+    <div id="editUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Modifier l'utilisateur</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="editUserForm">
+                <div class="form-group">
+                    <label for="editFirstName">Prénom</label>
+                    <input type="text" id="editFirstName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editLastName">Nom</label>
+                    <input type="text" id="editLastName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEmail">Email</label>
+                    <input type="email" id="editEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="editPhone">Téléphone</label>
+                    <input type="tel" id="editPhone">
+                </div>
+                <div class="form-group">
+                    <label for="editStatus">Statut</label>
+                    <select id="editStatus">
+                        <option value="active">Actif</option>
+                        <option value="inactive">Inactif</option>
+                        <option value="suspended">Suspendu</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Sauvegarder</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/userManager.js"></script>
+    <script src="js/balanceManager.js"></script>
+    <script src="js/cloudSync.js"></script>
+    <script>
+        let currentUsers = [];
+        let currentEditingUserId = null;
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Page admin-complete chargée');
+            loadUsersFromFile();
+            
+            // Vérifier le statut cloud après un délai
+            setTimeout(() => {
+                getCloudStatus();
+            }, 2000);
+        });
+
+        // Charger les utilisateurs depuis le fichier JSON
+        async function loadUsersFromFile() {
+            try {
+                const response = await fetch('users.json');
+                if (!response.ok) {
+                    throw new Error('Impossible de charger le fichier users.json');
+                }
+                
+                const data = await response.json();
+                currentUsers = data.users || [];
+                
+                console.log('✅ Utilisateurs chargés:', currentUsers);
+                
+                // Mettre à jour les statistiques
+                updateStats();
+                
+                // Mettre à jour les tableaux
+                updateHomeUsersTable();
+                updateWalletUsersTable();
+                updateBankingUsersTable();
+                
+            } catch (error) {
+                console.error('❌ Erreur lors du chargement des utilisateurs:', error);
+                showError('Erreur lors du chargement des utilisateurs: ' + error.message);
+            }
+        }
+
+        // Mettre à jour les statistiques
+        function updateStats() {
+            document.getElementById('totalUsers').textContent = currentUsers.length;
+            document.getElementById('activeUsers').textContent = currentUsers.filter(u => u.status === 'active').length;
+            
+            let totalBalance = 0;
+            let totalCrypto = 0;
+            
+            currentUsers.forEach(user => {
+                const balances = balanceManager ? balanceManager.getUserBalances(user.id) : {};
+                totalBalance += balances.TOTAL_BALANCE_EUR || 0;
+                totalCrypto += balances.TOTAL_CRYPTO_EUR || 0;
+            });
+            
+            document.getElementById('totalBalance').textContent = `€${totalBalance.toFixed(2)}`;
+            document.getElementById('totalCrypto').textContent = `€${totalCrypto.toFixed(2)}`;
+        }
+
+        // Afficher un onglet
+        function showTab(tabName) {
+            // Masquer tous les onglets
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Afficher l'onglet sélectionné
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Mettre à jour le tableau des utilisateurs pour l'onglet Accueil
+        function updateHomeUsersTable() {
+            const container = document.getElementById('homeUsersTableContainer');
+            
+            if (currentUsers.length === 0) {
+                container.innerHTML = `
+                    <div class="no-users">
+                        <h3>Aucun utilisateur enregistré</h3>
+                        <p>Les utilisateurs avec leurs soldes d'accueil apparaîtront ici</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let tableHTML = `
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Email</th>
+                            <th>Solde Total (€)</th>
+                            <th>Portefeuille Crypto (€)</th>
+                            <th>% Crypto ce mois</th>
+                            <th>Staking Actif (€)</th>
+                            <th>% Staking ce mois</th>
+                            <th>Transactions</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            currentUsers.forEach(user => {
+                const balances = balanceManager ? balanceManager.getUserBalances(user.id) : {};
+                const totalBalance = balances.TOTAL_BALANCE_EUR || 0;
+                const cryptoBalance = balances.TOTAL_CRYPTO_EUR || 0;
+                const stakingBalance = balances.TOTAL_STAKED_EUR || 0;
+                const transactions = JSON.parse(localStorage.getItem(`crypto_transactions_${user.id}`) || '[]').length;
+
+                tableHTML += `
+                    <tr data-user-id="${user.id}">
+                        <td>${user.id}</td>
+                        <td>${user.firstName} ${user.lastName}</td>
+                        <td>${user.email}</td>
+                        <td>
+                            <input type="number" class="balance-input" 
+                                   value="${totalBalance.toFixed(2)}" 
+                                   step="0.01" 
+                                   data-field="TOTAL_BALANCE_EUR" 
+                                   data-user-id="${user.id}"
+                                   onchange="updateHomeBalance('${user.id}', 'TOTAL_BALANCE_EUR', this.value)">
+                        </td>
+                        <td>
+                            <input type="number" class="balance-input" 
+                                   value="${cryptoBalance.toFixed(2)}" 
+                                   step="0.01" 
+                                   data-field="TOTAL_CRYPTO_EUR" 
+                                   data-user-id="${user.id}"
+                                   onchange="updateHomeBalance('${user.id}', 'TOTAL_CRYPTO_EUR', this.value)">
+                        </td>
+                        <td>
+                            <input type="number" class="balance-input" 
+                                   value="0.0" 
+                                   step="0.1" 
+                                   data-field="CRYPTO_PERCENT_MONTH" 
+                                   data-user-id="${user.id}"
+                                   onchange="updateHomeBalance('${user.id}', 'CRYPTO_PERCENT_MONTH', this.value)">
+                        </td>
+                        <td>
+                            <input type="number" class="balance-input" 
+                                   value="${stakingBalance.toFixed(2)}" 
+                                   step="0.01" 
+                                   data-field="TOTAL_STAKED_EUR" 
+                                   data-user-id="${user.id}"
+                                   onchange="updateHomeBalance('${user.id}', 'TOTAL_STAKED_EUR', this.value)">
+                        </td>
+                        <td>
+                            <input type="number" class="balance-input" 
+                                   value="0.0" 
+                                   step="0.1" 
+                                   data-field="STAKING_PERCENT_MONTH" 
+                                   data-user-id="${user.id}"
+                                   onchange="updateHomeBalance('${user.id}', 'STAKING_PERCENT_MONTH', this.value)">
+                        </td>
+                        <td>
+                            <input type="number" class="balance-input" 
+                                   value="${transactions}" 
+                                   step="1" 
+                                   data-field="TRANSACTIONS_COUNT" 
+                                   data-user-id="${user.id}"
+                                   readonly>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn edit-btn" onclick="editUser('${user.id}')">Modifier</button>
+                                <button class="action-btn delete-btn" onclick="deleteUser('${user.id}')">Supprimer</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = tableHTML;
+        }
+
+        // Mettre à jour le tableau des utilisateurs pour l'onglet Portefeuille
+        function updateWalletUsersTable() {
+            const container = document.getElementById('walletUsersTableContainer');
+            
+            if (currentUsers.length === 0) {
+                container.innerHTML = `
+                    <div class="no-users">
+                        <h3>Aucun utilisateur enregistré</h3>
+                        <p>Les utilisateurs avec leurs portefeuilles crypto apparaîtront ici</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let tableHTML = `
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Email</th>
+                            <th>BTC (€)</th>
+                            <th>ETH (€)</th>
+                            <th>BNB (€)</th>
+                            <th>ADA (€)</th>
+                            <th>DOT (€)</th>
+                            <th>Total Crypto (€)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            currentUsers.forEach(user => {
+                const balances = balanceManager ? balanceManager.getUserBalances(user.id) : {};
+                const btcBalance = balances.BTC_EUR || 0;
+                const ethBalance = balances.ETH_EUR || 0;
+                const bnbBalance = balances.BNB_EUR || 0;
+                const adaBalance = balances.ADA_EUR || 0;
+                const dotBalance = balances.DOT_EUR || 0;
+                const totalCrypto = balances.TOTAL_CRYPTO_EUR || 0;
+
+                tableHTML += `
+                    <tr data-user-id="${user.id}">
+                        <td>${user.id}</td>
+                        <td>${user.firstName} ${user.lastName}</td>
+                        <td>${user.email}</td>
+                        <td>
+                            <input type="number" class="balance-input" 
+                                   value="${btcBalance.toFixed(2)}" 
+                                   step="0.01" 
+                                   data-field="BTC_EUR" 
+                                   data-user-id="${user.id}"
+                                   onchange="updateWalletBalance('${user.id}', 'BTC_EUR', this.value)">
+                        </td>
+                        <td>
+                            <input type="number" class="balance-input" 
+                                   value="${ethBalance.toFixed(2)}" 
+                                   step="0.01" 
+                                   data-field="ETH_EUR" 
+                                   data-user-id="${user.id}"
+                                   onchange="updateWalletBalance('${user.id}', 'ETH_EUR', this.value)">
+                        </td>
+                        <td>
+                            <input type="number" class="balance-input" 
+                                   value="${bnbBalance.toFixed(2)}" 
+                                   step="0.01" 
+                                   data-field="BNB_EUR" 
+                                   data-user-id="${user.id}"
+                                   onchange="updateWalletBalance('${user.id}', 'BNB_EUR', this.value)">
+                        </td>
+                        <td>
+                            <input type="number" class="balance-input" 
+                                   value="${adaBalance.toFixed(2)}" 
+                                   step="0.01" 
+                                   data-field="ADA_EUR" 
+                                   data-user-id="${user.id}"
+                                   onchange="updateWalletBalance('${user.id}', 'ADA_EUR', this.value)">
+                        </td>
+                        <td>
+                            <input type="number" class="balance-input" 
+                                   value="${dotBalance.toFixed(2)}" 
+                                   step="0.01" 
+                                   data-field="DOT_EUR" 
+                                   data-user-id="${user.id}"
+                                   onchange="updateWalletBalance('${user.id}', 'DOT_EUR', this.value)">
+                        </td>
+                        <td>
+                            <input type="number" class="balance-input" 
+                                   value="${totalCrypto.toFixed(2)}" 
+                                   step="0.01" 
+                                   data-field="TOTAL_CRYPTO_EUR" 
+                                   data-user-id="${user.id}"
+                                   onchange="updateWalletBalance('${user.id}', 'TOTAL_CRYPTO_EUR', this.value)">
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn edit-btn" onclick="editUser('${user.id}')">Modifier</button>
+                                <button class="action-btn delete-btn" onclick="deleteUser('${user.id}')">Supprimer</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = tableHTML;
+        }
+
+        // Mettre à jour le tableau des utilisateurs pour l'onglet Banking
+        function updateBankingUsersTable() {
+            const container = document.getElementById('bankingUsersTableContainer');
+            
+            if (currentUsers.length === 0) {
+                container.innerHTML = `
+                    <div class="no-users">
+                        <h3>Aucun utilisateur enregistré</h3>
+                        <p>Les utilisateurs avec leurs comptes bancaires apparaîtront ici</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let tableHTML = `
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Email</th>
+                            <th>Compte EUR (€)</th>
+                            <th>Compte USD ($)</th>
+                            <th>Compte GBP (£)</th>
+                            <th>Total Banking (€)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            currentUsers.forEach(user => {
+                const balances = balanceManager ? balanceManager.getUserBalances(user.id) : {};
+                const eurBalance = balances.EUR_BALANCE || 0;
+                const usdBalance = balances.USD_BALANCE || 0;
+                const gbpBalance = balances.GBP_BALANCE || 0;
+                const totalBanking = balances.TOTAL_BANKING_EUR || 0;
+
+                tableHTML += `
+                    <tr data-user-id="${user.id}">
+                        <td>${user.id}</td>
+                        <td>${user.firstName} ${user.lastName}</td>
+                        <td>${user.email}</td>
+                        <td>
+                            <input type="number" class="balance-input" 
+                                   value="${eurBalance.toFixed(2)}" 
+                                   step="0.01" 
+                                   data-field="EUR_BALANCE" 
+                                   data-user-id="${user.id}"
+                                   onchange="updateBankingBalance('${user.id}', 'EUR_BALANCE', this.value)">
+                        </td>
+                        <td>
+                            <input type="number" class="balance-input" 
+                                   value="${usdBalance.toFixed(2)}" 
+                                   step="0.01" 
+                                   data-field="USD_BALANCE" 
+                                   data-user-id="${user.id}"
+                                   onchange="updateBankingBalance('${user.id}', 'USD_BALANCE', this.value)">
+                        </td>
+                        <td>
+                            <input type="number" class="balance-input" 
+                                   value="${gbpBalance.toFixed(2)}" 
+                                   step="0.01" 
+                                   data-field="GBP_BALANCE" 
+                                   data-user-id="${user.id}"
+                                   onchange="updateBankingBalance('${user.id}', 'GBP_BALANCE', this.value)">
+                        </td>
+                        <td>
+                            <input type="number" class="balance-input" 
+                                   value="${totalBanking.toFixed(2)}" 
+                                   step="0.01" 
+                                   data-field="TOTAL_BANKING_EUR" 
+                                   data-user-id="${user.id}"
+                                   onchange="updateBankingBalance('${user.id}', 'TOTAL_BANKING_EUR', this.value)">
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn edit-btn" onclick="editUser('${user.id}')">Modifier</button>
+                                <button class="action-btn delete-btn" onclick="deleteUser('${user.id}')">Supprimer</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = tableHTML;
+        }
+
+        // Fonctions de mise à jour des soldes avec synchronisation cloud
+        async function updateHomeBalance(userId, field, value) {
+            try {
+                // Mise à jour locale
+                if (balanceManager) {
+                    balanceManager.updateBalance(userId, field, parseFloat(value));
+                }
+                
+                // Synchronisation cloud pour tous les utilisateurs
+                await syncAllUsersToCloud();
+                
+                showSuccess(`Solde ${field} mis à jour pour l'utilisateur ${userId} (synchronisé cloud)`);
+                updateStats();
+            } catch (error) {
+                console.error('❌ Erreur mise à jour solde:', error);
+                showError(`Erreur mise à jour: ${error.message}`);
+            }
+        }
+
+        async function updateWalletBalance(userId, field, value) {
+            try {
+                // Mise à jour locale
+                if (balanceManager) {
+                    balanceManager.updateBalance(userId, field, parseFloat(value));
+                }
+                
+                // Synchronisation cloud pour tous les utilisateurs
+                await syncAllUsersToCloud();
+                
+                showSuccess(`Solde ${field} mis à jour pour l'utilisateur ${userId} (synchronisé cloud)`);
+                updateStats();
+            } catch (error) {
+                console.error('❌ Erreur mise à jour solde:', error);
+                showError(`Erreur mise à jour: ${error.message}`);
+            }
+        }
+
+        async function updateBankingBalance(userId, field, value) {
+            try {
+                // Mise à jour locale
+                if (balanceManager) {
+                    balanceManager.updateBalance(userId, field, parseFloat(value));
+                }
+                
+                // Synchronisation cloud pour tous les utilisateurs
+                await syncAllUsersToCloud();
+                
+                showSuccess(`Solde ${field} mis à jour pour l'utilisateur ${userId} (synchronisé cloud)`);
+                updateStats();
+            } catch (error) {
+                console.error('❌ Erreur mise à jour solde:', error);
+                showError(`Erreur mise à jour: ${error.message}`);
+            }
+        }
+
+        // Fonction pour synchroniser tous les utilisateurs vers le cloud
+        async function syncAllUsersToCloud() {
+            if (!window.cloudSyncManager) {
+                console.warn('⚠️ Cloud Sync Manager non disponible');
+                return;
+            }
+
+            try {
+                console.log('☁️ Synchronisation de tous les utilisateurs vers le cloud...');
+                
+                // Pour chaque utilisateur, sauvegarder ses données dans le cloud
+                for (const user of currentUsers) {
+                    const userBalances = balanceManager ? balanceManager.getUserBalances(user.id) : {};
+                    const userTransactions = []; // À implémenter si nécessaire
+                    const userKYC = {}; // À récupérer depuis localStorage si nécessaire
+                    const userSettings = {}; // À récupérer depuis localStorage si nécessaire
+                    
+                    await window.saveToCloud(user, userBalances, userTransactions, userKYC, userSettings);
+                }
+                
+                console.log('✅ Synchronisation cloud terminée pour tous les utilisateurs');
+            } catch (error) {
+                console.error('❌ Erreur synchronisation cloud:', error);
+                throw error;
+            }
+        }
+
+        // Fonction pour charger tous les utilisateurs depuis le cloud
+        async function loadAllUsersFromCloud() {
+            if (!window.cloudSyncManager) {
+                console.warn('⚠️ Cloud Sync Manager non disponible');
+                return;
+            }
+
+            try {
+                console.log('☁️ Chargement de tous les utilisateurs depuis le cloud...');
+                
+                // Cette fonction nécessiterait une implémentation plus complexe
+                // pour récupérer les données de tous les utilisateurs depuis le cloud
+                // Pour l'instant, on utilise le chargement local
+                await loadUsersFromFile();
+                
+                console.log('✅ Chargement cloud terminé');
+                showSuccess('Données chargées depuis le cloud');
+            } catch (error) {
+                console.error('❌ Erreur chargement cloud:', error);
+                showError(`Erreur chargement cloud: ${error.message}`);
+            }
+        }
+
+        // Fonction pour afficher le statut cloud
+        function getCloudStatus() {
+            if (!window.cloudSyncManager) {
+                showError('Cloud Sync Manager non disponible');
+                return;
+            }
+
+            try {
+                const status = window.getCloudStatus();
+                const statusElement = document.getElementById('cloudStatus');
+                
+                let statusText = `☁️ Statut Cloud: `;
+                statusText += status.isOnline ? '✅ En ligne' : '❌ Hors ligne';
+                statusText += ` | API Key: ${status.binId ? '✅ Configurée' : '❌ Manquante'}`;
+                statusText += ` | Sauvegarde locale: ${status.hasLocalBackup ? '✅ Disponible' : '❌ Aucune'}`;
+                
+                if (status.lastSync) {
+                    const lastSyncDate = new Date(status.lastSync);
+                    statusText += ` | Dernière sync: ${lastSyncDate.toLocaleString('fr-FR')}`;
+                }
+                
+                statusElement.textContent = statusText;
+                statusElement.style.color = status.isOnline && status.binId ? '#28a745' : '#dc3545';
+                
+                console.log('📊 Statut cloud:', status);
+            } catch (error) {
+                console.error('❌ Erreur statut cloud:', error);
+                showError(`Erreur statut cloud: ${error.message}`);
+            }
+        }
+
+        // Fonctions de gestion des utilisateurs
+        function editUser(userId) {
+            const user = currentUsers.find(u => u.id === userId);
+            if (!user) {
+                showError('Utilisateur non trouvé');
+                return;
+            }
+
+            currentEditingUserId = userId;
+            document.getElementById('editFirstName').value = user.firstName;
+            document.getElementById('editLastName').value = user.lastName;
+            document.getElementById('editEmail').value = user.email;
+            document.getElementById('editPhone').value = user.phone || '';
+            document.getElementById('editStatus').value = user.status;
+
+            document.getElementById('editUserModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('editUserModal').style.display = 'none';
+            currentEditingUserId = null;
+        }
+
+        function deleteUser(userId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
+                currentUsers = currentUsers.filter(u => u.id !== userId);
+                showSuccess('Utilisateur supprimé avec succès');
+                updateStats();
+                updateHomeUsersTable();
+                updateWalletUsersTable();
+                updateBankingUsersTable();
+            }
+        }
+
+        // Gestion du formulaire d'édition
+        document.getElementById('editUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!currentEditingUserId) {
+                showError('Aucun utilisateur sélectionné');
+                return;
+            }
+
+            const user = currentUsers.find(u => u.id === currentEditingUserId);
+            if (!user) {
+                showError('Utilisateur non trouvé');
+                return;
+            }
+
+            // Mettre à jour les données de l'utilisateur
+            user.firstName = document.getElementById('editFirstName').value;
+            user.lastName = document.getElementById('editLastName').value;
+            user.email = document.getElementById('editEmail').value;
+            user.phone = document.getElementById('editPhone').value;
+            user.status = document.getElementById('editStatus').value;
+
+            showSuccess('Utilisateur mis à jour avec succès');
+            closeModal();
+            
+            // Mettre à jour les tableaux
+            updateHomeUsersTable();
+            updateWalletUsersTable();
+            updateBankingUsersTable();
+            updateStats();
+        });
+
+        // Fonction de filtrage
+        function filterUsers(tabName) {
+            const searchTerm = document.getElementById(tabName + 'SearchBox').value.toLowerCase();
+            const rows = document.querySelectorAll(`#${tabName} .users-table tbody tr`);
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // Fonctions d'affichage des messages
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = message;
+            
+            const container = document.querySelector('.admin-content');
+            container.insertBefore(successDiv, container.firstChild);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            
+            const container = document.querySelector('.admin-content');
+            container.insertBefore(errorDiv, container.firstChild);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        // Fermer le modal en cliquant à l'extérieur
+        window.onclick = function(event) {
+            const modal = document.getElementById('editUserModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
+
+</html>

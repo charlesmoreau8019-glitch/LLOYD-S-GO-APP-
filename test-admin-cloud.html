@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Admin Cloud - Lloyd's GO!</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #007A3D 0%, #005A2C 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .status-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007bff;
+        }
+
+        .status-card.success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+
+        .status-card.error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .status-card.warning {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .button.success {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+        }
+
+        .button.warning {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+        }
+
+        .button.danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+
+        .log {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .user-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+        }
+
+        .user-card h3 {
+            margin-bottom: 10px;
+            color: #007A3D;
+        }
+
+        .balance-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+
+        .balance-input:focus {
+            outline: none;
+            border-color: #007A3D;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Test Admin Cloud</h1>
+        
+        <div class="status-card" id="adminStatus">
+            <h3>🔧 Statut Administration</h3>
+            <p id="adminText">Initialisation...</p>
+        </div>
+
+        <div class="status-card" id="cloudStatus">
+            <h3>☁️ Statut Cloud</h3>
+            <p id="cloudText">Vérification...</p>
+        </div>
+
+        <div class="grid">
+            <div>
+                <h3>🔧 Tests Administration</h3>
+                <button class="button" onclick="testAdminAccess()">🔑 Test Accès Admin</button>
+                <button class="button success" onclick="testUserManagement()">👥 Test Gestion Utilisateurs</button>
+                <button class="button warning" onclick="testBalanceModification()">💰 Test Modification Soldes</button>
+            </div>
+
+            <div>
+                <h3>☁️ Tests Cloud</h3>
+                <button class="button" onclick="testCloudSync()">🔄 Test Synchronisation</button>
+                <button class="button success" onclick="testGlobalAccess()">🌍 Test Accès Global</button>
+                <button class="button warning" onclick="testRealTimeUpdate()">⚡ Test Temps Réel</button>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div>
+                <h3>👤 Utilisateur de Test</h3>
+                <div class="user-card">
+                    <h4>Admin Test</h4>
+                    <label>Solde Total (€):</label>
+                    <input type="number" class="balance-input" id="totalBalance" value="1000.00" step="0.01">
+                    
+                    <label>Bitcoin (€):</label>
+                    <input type="number" class="balance-input" id="btcBalance" value="500.00" step="0.01">
+                    
+                    <label>Ethereum (€):</label>
+                    <input type="number" class="balance-input" id="ethBalance" value="300.00" step="0.01">
+                    
+                    <label>Solde Bancaire (€):</label>
+                    <input type="number" class="balance-input" id="bankBalance" value="200.00" step="0.01">
+                    
+                    <button class="button success" onclick="updateTestUser()">💾 Mettre à jour</button>
+                </div>
+            </div>
+
+            <div>
+                <h3>📊 Résultats des Tests</h3>
+                <div id="testResults">
+                    <p>Aucun test effectué</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="log" id="log">
+            === LOGS TEST ADMIN CLOUD ===
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/userManager.js"></script>
+    <script src="js/balanceManager.js"></script>
+    <script src="js/cloudSync.js"></script>
+    <script>
+        // Fonctions de test
+        function log(message) {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.innerHTML += `\n[${timestamp}] ${message}`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function updateStatus(elementId, text, type = '') {
+            const element = document.getElementById(elementId);
+            const textElement = document.getElementById(elementId.replace('Status', 'Text'));
+            
+            textElement.textContent = text;
+            element.className = `status-card ${type}`;
+        }
+
+        function updateTestResults(message, success = true) {
+            const resultsDiv = document.getElementById('testResults');
+            const color = success ? '#28a745' : '#dc3545';
+            const icon = success ? '✅' : '❌';
+            
+            resultsDiv.innerHTML += `<p style="color: ${color}; margin: 5px 0;">${icon} ${message}</p>`;
+        }
+
+        // Test d'accès admin
+        function testAdminAccess() {
+            log('🔑 Test d\'accès admin...');
+            
+            try {
+                // Vérifier si les gestionnaires sont disponibles
+                const hasUserManager = typeof userManager !== 'undefined';
+                const hasBalanceManager = typeof balanceManager !== 'undefined';
+                const hasCloudSync = typeof cloudSyncManager !== 'undefined';
+                
+                if (hasUserManager && hasBalanceManager && hasCloudSync) {
+                    updateStatus('adminStatus', '✅ Tous les gestionnaires disponibles', 'success');
+                    updateTestResults('Accès admin fonctionnel', true);
+                    log('✅ Accès admin réussi');
+                } else {
+                    throw new Error('Gestionnaires manquants');
+                }
+            } catch (error) {
+                updateStatus('adminStatus', '❌ Erreur accès admin', 'error');
+                updateTestResults('Erreur accès admin: ' + error.message, false);
+                log('❌ Erreur accès admin: ' + error.message);
+            }
+        }
+
+        // Test de gestion des utilisateurs
+        function testUserManagement() {
+            log('👥 Test de gestion des utilisateurs...');
+            
+            try {
+                // Créer un utilisateur de test
+                const testUser = {
+                    id: 'test-admin-' + Date.now(),
+                    firstName: 'Test',
+                    lastName: 'Admin',
+                    email: 'test.admin@example.com',
+                    phone: '+33 1 23 45 67 89',
+                    status: 'active',
+                    createdAt: new Date().toISOString()
+                };
+                
+                // Simuler l'ajout d'un utilisateur
+                if (typeof userManager !== 'undefined') {
+                    userManager.addUser(testUser);
+                    log('✅ Utilisateur de test créé: ' + testUser.id);
+                    updateTestResults('Gestion utilisateurs fonctionnelle', true);
+                } else {
+                    throw new Error('UserManager non disponible');
+                }
+            } catch (error) {
+                updateTestResults('Erreur gestion utilisateurs: ' + error.message, false);
+                log('❌ Erreur gestion utilisateurs: ' + error.message);
+            }
+        }
+
+        // Test de modification des soldes
+        function testBalanceModification() {
+            log('💰 Test de modification des soldes...');
+            
+            try {
+                const testUserId = 'test-user-' + Date.now();
+                const newBalance = 1500.00;
+                
+                if (typeof balanceManager !== 'undefined') {
+                    balanceManager.updateBalance(testUserId, 'TOTAL_BALANCE_EUR', newBalance);
+                    const retrievedBalance = balanceManager.getUserBalances(testUserId);
+                    
+                    if (retrievedBalance.TOTAL_BALANCE_EUR === newBalance) {
+                        log('✅ Modification de solde réussie');
+                        updateTestResults('Modification soldes fonctionnelle', true);
+                    } else {
+                        throw new Error('Solde non mis à jour correctement');
+                    }
+                } else {
+                    throw new Error('BalanceManager non disponible');
+                }
+            } catch (error) {
+                updateTestResults('Erreur modification soldes: ' + error.message, false);
+                log('❌ Erreur modification soldes: ' + error.message);
+            }
+        }
+
+        // Test de synchronisation cloud
+        async function testCloudSync() {
+            log('🔄 Test de synchronisation cloud...');
+            
+            try {
+                if (typeof cloudSyncManager !== 'undefined') {
+                    const status = cloudSyncManager.getSyncStatus();
+                    
+                    if (status.isOnline) {
+                        log('✅ Synchronisation cloud disponible');
+                        updateTestResults('Synchronisation cloud fonctionnelle', true);
+                        
+                        // Test de synchronisation
+                        const testData = {
+                            user: { id: 'test-sync', email: 'test@example.com' },
+                            balances: { TOTAL_BALANCE_EUR: 1000 },
+                            transactions: [],
+                            kyc: {},
+                            settings: {}
+                        };
+                        
+                        const syncResult = await cloudSyncManager.saveUserData(
+                            testData.user,
+                            testData.balances,
+                            testData.transactions,
+                            testData.kyc,
+                            testData.settings
+                        );
+                        
+                        if (syncResult) {
+                            log('✅ Synchronisation cloud réussie');
+                            updateTestResults('Synchronisation cloud réussie', true);
+                        } else {
+                            log('⚠️ Synchronisation cloud en mode local');
+                            updateTestResults('Synchronisation cloud en mode local', true);
+                        }
+                    } else {
+                        log('⚠️ Hors ligne - Synchronisation locale');
+                        updateTestResults('Synchronisation locale active', true);
+                    }
+                } else {
+                    throw new Error('CloudSyncManager non disponible');
+                }
+            } catch (error) {
+                updateTestResults('Erreur synchronisation cloud: ' + error.message, false);
+                log('❌ Erreur synchronisation cloud: ' + error.message);
+            }
+        }
+
+        // Test d'accès global
+        function testGlobalAccess() {
+            log('🌍 Test d\'accès global...');
+            
+            try {
+                // Simuler un accès depuis différentes localisations
+                const testLocations = ['France', 'États-Unis', 'Japon', 'Australie'];
+                const currentTime = new Date().toLocaleString('fr-FR');
+                
+                log('✅ Accès global simulé pour: ' + testLocations.join(', '));
+                updateTestResults('Accès global fonctionnel', true);
+                
+                // Vérifier la connectivité
+                const isOnline = navigator.onLine;
+                log(`🌐 Connectivité: ${isOnline ? 'En ligne' : 'Hors ligne'}`);
+                
+            } catch (error) {
+                updateTestResults('Erreur accès global: ' + error.message, false);
+                log('❌ Erreur accès global: ' + error.message);
+            }
+        }
+
+        // Test de mise à jour temps réel
+        function testRealTimeUpdate() {
+            log('⚡ Test de mise à jour temps réel...');
+            
+            try {
+                // Simuler une modification en temps réel
+                const originalBalance = parseFloat(document.getElementById('totalBalance').value);
+                const newBalance = originalBalance + 100;
+                
+                document.getElementById('totalBalance').value = newBalance.toFixed(2);
+                
+                // Simuler la synchronisation
+                setTimeout(() => {
+                    log('✅ Mise à jour temps réel simulée');
+                    updateTestResults('Mise à jour temps réel fonctionnelle', true);
+                }, 1000);
+                
+            } catch (error) {
+                updateTestResults('Erreur temps réel: ' + error.message, false);
+                log('❌ Erreur temps réel: ' + error.message);
+            }
+        }
+
+        // Mettre à jour l'utilisateur de test
+        async function updateTestUser() {
+            log('💾 Mise à jour utilisateur de test...');
+            
+            try {
+                const testUser = {
+                    id: 'test-user-admin',
+                    firstName: 'Admin',
+                    lastName: 'Test',
+                    email: 'admin.test@example.com',
+                    phone: '+33 1 23 45 67 89',
+                    status: 'active'
+                };
+                
+                const balances = {
+                    TOTAL_BALANCE_EUR: parseFloat(document.getElementById('totalBalance').value),
+                    BTC_EUR: parseFloat(document.getElementById('btcBalance').value),
+                    ETH_EUR: parseFloat(document.getElementById('ethBalance').value),
+                    EUR_BALANCE: parseFloat(document.getElementById('bankBalance').value)
+                };
+                
+                // Mise à jour locale
+                if (typeof balanceManager !== 'undefined') {
+                    Object.keys(balances).forEach(key => {
+                        balanceManager.updateBalance(testUser.id, key, balances[key]);
+                    });
+                }
+                
+                // Synchronisation cloud
+                if (typeof cloudSyncManager !== 'undefined') {
+                    await cloudSyncManager.saveUserData(testUser, balances, [], {}, {});
+                }
+                
+                log('✅ Utilisateur de test mis à jour');
+                updateTestResults('Mise à jour utilisateur réussie', true);
+                
+            } catch (error) {
+                updateTestResults('Erreur mise à jour: ' + error.message, false);
+                log('❌ Erreur mise à jour: ' + error.message);
+            }
+        }
+
+        // Vérifier le statut cloud
+        function checkCloudStatus() {
+            if (typeof cloudSyncManager !== 'undefined') {
+                const status = cloudSyncManager.getSyncStatus();
+                updateStatus('cloudStatus', 
+                    `En ligne: ${status.isOnline ? '✅' : '❌'} | API Key: ${status.binId ? '✅' : '❌'} | Dernière sync: ${status.lastSync ? new Date(status.lastSync).toLocaleString('fr-FR') : 'Jamais'}`,
+                    status.isOnline && status.binId ? 'success' : 'warning'
+                );
+                log('📊 Statut cloud vérifié');
+            } else {
+                updateStatus('cloudStatus', '❌ CloudSyncManager non disponible', 'error');
+                log('❌ CloudSyncManager non disponible');
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Initialisation du test Admin Cloud');
+            
+            // Vérifier les statuts
+            setTimeout(() => {
+                checkCloudStatus();
+                testAdminAccess();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

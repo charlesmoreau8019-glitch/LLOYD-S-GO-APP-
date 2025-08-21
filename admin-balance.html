@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lloyd's GO! - Gestion des Soldes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #007A3D 0%, #005A2C 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .admin-container {
+            max-width: 95vw;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #007A3D, #00A651);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .admin-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .admin-header p {
+            opacity: 0.9;
+        }
+
+        .admin-content {
+            padding: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #F8F9FA;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border-left: 4px solid #007A3D;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #007A3D;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #6C757D;
+            font-size: 14px;
+        }
+
+        .actions-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #007A3D;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #005A2C;
+        }
+
+        .btn-secondary {
+            background: #6C757D;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545B62;
+        }
+
+        .btn-success {
+            background: #28A745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-warning {
+            background: #FFC107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #E0A800;
+        }
+
+        .btn-danger {
+            background: #DC3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #C82333;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-size: 11px;
+            min-width: 2000px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            max-width: 100%;
+            margin: 20px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .users-table th,
+        .users-table td {
+            padding: 8px 6px;
+            text-align: left;
+            border-bottom: 1px solid #E9ECEF;
+            white-space: nowrap;
+        }
+
+        .users-table th {
+            background: #007A3D;
+            font-weight: 600;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .users-table tr:hover {
+            background: #E8F5E8;
+        }
+        
+        .users-table tr:nth-child(even) {
+            background: #F8F9FA;
+        }
+        
+        .users-table tr:nth-child(even):hover {
+            background: #E8F5E8;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #D4EDDA;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #F8D7DA;
+            color: #721C24;
+        }
+
+        .balance-input {
+            width: 80px;
+            padding: 4px 6px;
+            border: 2px solid #E9ECEF;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: right;
+            transition: all 0.3s ease;
+        }
+
+        .balance-input:focus {
+            outline: none;
+            border-color: #007A3D;
+            box-shadow: 0 0 0 3px rgba(0, 122, 61, 0.1);
+        }
+
+        .balance-input.updated {
+            border-color: #28A745;
+            background: #F8FFF9;
+        }
+
+        .balance-display {
+            font-weight: 600;
+            color: #007A3D;
+            font-size: 16px;
+        }
+
+        .balance-change {
+            font-size: 12px;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+
+        .balance-change.positive {
+            background: #D4EDDA;
+            color: #155724;
+        }
+
+        .balance-change.negative {
+            background: #F8D7DA;
+            color: #721C24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .search-box {
+            padding: 10px 15px;
+            border: 2px solid #E9ECEF;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 300px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #007A3D;
+        }
+
+        .no-users {
+            text-align: center;
+            padding: 40px;
+            color: #6C757D;
+        }
+
+        .bulk-actions {
+            background: #F8F9FA;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .bulk-actions h3 {
+            margin-bottom: 15px;
+            color: #212529;
+        }
+
+        .bulk-form {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 8px 12px;
+            border: 2px solid #E9ECEF;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #007A3D;
+        }
+
+        .realtime-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .realtime-dot {
+            width: 8px;
+            height: 8px;
+            background: #10B981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .realtime-text {
+            font-size: 12px;
+            font-weight: 600;
+            color: #10B981;
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .sync-status.synced {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10B981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .sync-status.pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: #FFC107;
+            border: 1px solid rgba(255, 193, 7, 0.2);
+        }
+
+        .sync-status.error {
+            background: rgba(220, 53, 69, 0.1);
+            color: #DC3545;
+            border: 1px solid rgba(220, 53, 69, 0.2);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #212529;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 768px) {
+            .actions-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .users-table {
+                font-size: 14px;
+            }
+            
+            .users-table th,
+            .users-table td {
+                padding: 10px 8px;
+            }
+
+            .bulk-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .balance-input {
+                width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+                    <div class="admin-header">
+                <h1>💰 Gestion des Soldes - Lloyd's GO!</h1>
+                <p>Modification en temps réel des soldes utilisateurs</p>
+                <div style="margin-top: 20px;">
+                    <a href="admin.html" class="btn btn-secondary" style="margin-right: 10px;">
+                        🔧 Administration Générale
+                    </a>
+                    <span style="color: rgba(255,255,255,0.8); font-size: 14px;">
+                        Retour à l'administration générale
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Message d'information -->
+            <div style="background: #E3F2FD; border-left: 4px solid #2196F3; padding: 15px; margin: 20px 0; border-radius: 8px;">
+                <h4 style="margin: 0 0 10px 0; color: #1976D2;">ℹ️ Instructions d'utilisation</h4>
+                <ul style="margin: 0; padding-left: 20px; color: #1976D2;">
+                    <li><strong>Modification directe :</strong> Cliquez sur n'importe quel champ de solde pour le modifier</li>
+                    <li><strong>Actions en masse :</strong> Utilisez les boutons en haut pour modifier tous les utilisateurs</li>
+                    <li><strong>Actualisation :</strong> Cliquez sur "🔄 Actualiser" pour rafraîchir les données</li>
+                    <li><strong>Utilisateurs de test :</strong> Cliquez sur "👥 Créer Utilisateurs Test" si aucun utilisateur n'apparaît</li>
+                    <li><strong>Connectivité :</strong> Le système se synchronise automatiquement avec internet</li>
+                </ul>
+            </div>
+            
+            <!-- Indicateur de connectivité -->
+            <div id="connectivityStatus" style="background: #D4EDDA; border-left: 4px solid #28A745; padding: 10px; margin: 10px 0; border-radius: 8px; display: none;">
+                <span style="color: #155724; font-weight: bold;">🌐 Connecté à internet - Synchronisation en temps réel</span>
+            </div>
+            
+            <div id="offlineStatus" style="background: #F8D7DA; border-left: 4px solid #DC3545; padding: 10px; margin: 10px 0; border-radius: 8px; display: none;">
+                <span style="color: #721C24; font-weight: bold;">❌ Hors ligne - Mode local uniquement</span>
+            </div>
+
+        <div class="admin-content">
+            <!-- Statistiques -->
+            <div class="stats-grid" id="statsGrid">
+                <!-- Les statistiques seront chargées dynamiquement -->
+            </div>
+
+            <!-- Actions en masse -->
+            <div class="bulk-actions">
+                <h3>📊 Actions en masse</h3>
+                <div class="bulk-form">
+                    <div class="form-group">
+                        <label>Action</label>
+                        <select id="bulkAction">
+                            <option value="add">Ajouter un montant</option>
+                            <option value="subtract">Soustraire un montant</option>
+                            <option value="multiply">Multiplier par</option>
+                            <option value="set">Définir à</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Montant</label>
+                        <input type="number" id="bulkAmount" placeholder="0.00" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Devise</label>
+                                                 <select id="bulkCurrency">
+                             <option value="EURX">EURX</option>
+                             <option value="USDT">USDT</option>
+                             <option value="BTC">BTC</option>
+                             <option value="ETH">ETH</option>
+                             <option value="ADA">ADA</option>
+                             <option value="DOT">DOT</option>
+                             <option value="LINK">LINK</option>
+                             <option value="MATIC">MATIC</option>
+                             <option value="SOL">SOL</option>
+                             <option value="AVAX">AVAX</option>
+                             <option value="UNI">UNI</option>
+                             <option value="AAVE">AAVE</option>
+                             <option value="BTC_STAKED">BTC Staking</option>
+                             <option value="ETH_STAKED">ETH Staking</option>
+                             <option value="ADA_STAKED">ADA Staking</option>
+                             <option value="DOT_STAKED">DOT Staking</option>
+                             <option value="SOL_STAKED">SOL Staking</option>
+                             <option value="AVAX_STAKED">AVAX Staking</option>
+                         </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="applyBulkAction()">
+                        ✅ Appliquer à tous
+                    </button>
+                    <button class="btn btn-warning" onclick="resetAllBalances()">
+                        🔄 Réinitialiser
+                    </button>
+                </div>
+            </div>
+
+            <!-- Barre d'actions -->
+            <div class="actions-bar">
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <input type="text" class="search-box" placeholder="Rechercher un utilisateur..." id="searchBox" onkeyup="filterUsers()">
+                    <div class="realtime-indicator">
+                        <div class="realtime-dot"></div>
+                        <span class="realtime-text">Temps réel</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <div class="sync-status synced" id="syncStatus">
+                        ✅ Synchronisé
+                    </div>
+                    <button class="btn btn-primary" onclick="refreshData()">
+                        🔄 Actualiser
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportBalances()">
+                        📥 Exporter
+                    </button>
+                    <button class="btn btn-info" onclick="showAllUsers()" style="background: #17A2B8; color: white;">
+                        🔍 Voir Tous les Utilisateurs
+                    </button>
+                    <button class="btn btn-info" onclick="syncWithAPI()" style="background: #17A2B8; color: white;">
+                        🌐 Synchroniser API
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tableau des utilisateurs -->
+            <div class="table-container">
+                <div id="usersTableContainer">
+                    <!-- Le tableau sera chargé dynamiquement -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">Confirmation</span>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Contenu dynamique -->
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+                <button class="btn btn-danger" id="confirmBtn" onclick="confirmAction()">Confirmer</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/userManager.js"></script>
+    <script src="js/balanceManager.js"></script>
+    <script src="js/apiManager.js"></script>
+    <script>
+        // Variables globales
+        let pendingChanges = new Map();
+        let syncInterval;
+        let lastSyncTime = Date.now();
+
+        // Charger les données au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Page admin-balance chargée');
+            console.log('📊 userManager disponible:', typeof userManager !== 'undefined');
+            console.log('💰 balanceManager disponible:', typeof balanceManager !== 'undefined');
+            
+            // Attendre un peu que les managers soient initialisés
+            setTimeout(() => {
+                console.log('🚀 Initialisation de la page admin-balance...');
+                
+                // Vérifier s'il y a des utilisateurs
+                const users = userManager.getAllUsers();
+                if (users.length === 0) {
+                    console.log('📭 Aucun utilisateur trouvé. Veuillez créer des utilisateurs via la page d\'inscription.');
+                }
+                
+                showAllUsers(); // Afficher tous les utilisateurs dans la console
+                loadBalanceData();
+                startRealtimeSync();
+            }, 500);
+        });
+
+        // Charger les données de gestion des soldes
+        function loadBalanceData() {
+            updateStats();
+            updateUsersTable();
+            updateSyncStatus();
+        }
+
+        // Mettre à jour les statistiques
+        function updateStats() {
+            const allUsers = userManager.getAllUsers();
+            const statsGrid = document.getElementById('statsGrid');
+            
+            // Calculer les statistiques manuellement
+            let totalEURX = 0;
+            let totalCryptoEUR = 0;
+            let totalStakedEUR = 0;
+            let totalBalanceEUR = 0;
+            
+            allUsers.forEach(user => {
+                const balances = balanceManager.getUserBalances(user.id);
+                totalEURX += balances.EURX || 0;
+                totalCryptoEUR += balances.TOTAL_CRYPTO_EUR || 0;
+                totalStakedEUR += balances.TOTAL_STAKED_EUR || 0;
+                totalBalanceEUR += balances.TOTAL_BALANCE_EUR || 0;
+            });
+            
+            const averageBalance = allUsers.length > 0 ? totalBalanceEUR / allUsers.length : 0;
+            
+            // Mettre à jour l'indicateur de connectivité
+            updateConnectivityStatus();
+            
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${allUsers.length}</div>
+                    <div class="stat-label">Utilisateurs totaux</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">€${totalBalanceEUR.toFixed(2)}</div>
+                    <div class="stat-label">Solde total principal</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">€${totalCryptoEUR.toFixed(2)}</div>
+                    <div class="stat-label">Total crypto</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">€${totalStakedEUR.toFixed(2)}</div>
+                    <div class="stat-label">Total staking</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">€${averageBalance.toFixed(2)}</div>
+                    <div class="stat-label">Solde moyen</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${new Date().toLocaleTimeString('fr-FR')}</div>
+                    <div class="stat-label">Dernière mise à jour</div>
+                </div>
+            `;
+        }
+        
+        // Mettre à jour l'indicateur de connectivité
+        function updateConnectivityStatus() {
+            const connectivityStatus = document.getElementById('connectivityStatus');
+            const offlineStatus = document.getElementById('offlineStatus');
+            
+            if (apiManager && apiManager.isOnline) {
+                connectivityStatus.style.display = 'block';
+                offlineStatus.style.display = 'none';
+            } else {
+                connectivityStatus.style.display = 'none';
+                offlineStatus.style.display = 'block';
+            }
+        }
+        
+        // Fonction de rafraîchissement
+        function refreshData() {
+            console.log('🔄 Actualisation des données...');
+            
+            // Recalculer tous les soldes totaux
+            const allUsers = userManager.getAllUsers();
+            allUsers.forEach(user => {
+                balanceManager.calculateTotalBalances(user.id);
+            });
+            
+            loadBalanceData();
+        }
+        
+        // Fonction pour afficher tous les utilisateurs dans la console
+        function showAllUsers() {
+            console.log('🔍 Affichage de tous les utilisateurs...');
+            const allUsers = userManager.getAllUsers();
+            console.log('📊 Total des utilisateurs:', allUsers.length);
+            
+            allUsers.forEach((user, index) => {
+                console.log(`👤 Utilisateur ${index + 1}:`, {
+                    id: user.id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: user.email,
+                    status: user.status,
+                    createdAt: user.createdAt
+                });
+            });
+            
+            // Afficher aussi dans une alerte pour confirmation
+            if (allUsers.length > 0) {
+                const userList = allUsers.map((user, index) => 
+                    `${index + 1}. ${user.firstName} ${user.lastName} (${user.email})`
+                ).join('\n');
+                alert(`Utilisateurs trouvés (${allUsers.length}):\n\n${userList}`);
+            } else {
+                alert('Aucun utilisateur trouvé. Cliquez sur "Créer Utilisateurs Test" pour en ajouter.');
+            }
+            
+            return allUsers;
+        }
+        
+        // Fonction supprimée pour usage professionnel
+        
+        // Fonction de synchronisation avec l'API
+        async function syncWithAPI() {
+            console.log('🌐 Synchronisation avec l\'API...');
+            
+            if (!apiManager) {
+                alert('❌ Gestionnaire d\'API non disponible');
+                return;
+            }
+            
+            try {
+                // Vérifier la connectivité
+                await apiManager.checkConnectivity();
+                
+                if (!apiManager.isOnline) {
+                    alert('❌ Pas de connexion internet. Synchronisation impossible.');
+                    return;
+                }
+                
+                // Synchroniser les utilisateurs
+                const usersSynced = await apiManager.syncUsers();
+                
+                // Synchroniser les soldes
+                const balancesSynced = await apiManager.syncBalances();
+                
+                if (usersSynced && balancesSynced) {
+                    alert('✅ Synchronisation réussie avec l\'API');
+                } else {
+                    alert('⚠️ Synchronisation partielle. Vérifiez la console pour plus de détails.');
+                }
+                
+                // Recharger les données
+                loadBalanceData();
+                
+            } catch (error) {
+                console.error('❌ Erreur lors de la synchronisation:', error);
+                alert('❌ Erreur lors de la synchronisation: ' + error.message);
+            }
+        }
+        
+        // Fonction supprimée pour usage professionnel
+
+        // Mettre à jour le tableau des utilisateurs
+        function updateUsersTable() {
+            console.log('🔄 Mise à jour du tableau des utilisateurs...');
+            
+            // Obtenir tous les utilisateurs depuis userManager
+            const allUsers = userManager.getAllUsers();
+            console.log('👥 Utilisateurs trouvés:', allUsers.length);
+            
+            // Afficher les détails de chaque utilisateur dans la console
+            allUsers.forEach((user, index) => {
+                console.log(`👤 Utilisateur ${index + 1}:`, {
+                    id: user.id,
+                    nom: `${user.firstName} ${user.lastName}`,
+                    email: user.email,
+                    status: user.status
+                });
+            });
+            
+            // Obtenir les soldes pour chaque utilisateur
+            const users = allUsers.map(user => ({
+                ...user,
+                balances: balanceManager.getUserBalances(user.id)
+            }));
+            
+            const container = document.getElementById('usersTableContainer');
+            
+            if (users.length === 0) {
+                container.innerHTML = `
+                    <div class="no-users" style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 12px; margin: 20px 0;">
+                        <h3>📭 Aucun utilisateur enregistré</h3>
+                        <p>Les utilisateurs avec leurs soldes apparaîtront ici</p>
+                                            <!-- Bouton supprimé pour usage professionnel -->
+                    </div>
+                `;
+                return;
+            }
+
+            let tableHTML = `
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Email</th>
+                                                         <th>Solde EURX</th>
+                             <th>Solde USDT</th>
+                             <th>Solde BTC</th>
+                             <th>Solde ETH</th>
+                             <th>Solde ADA</th>
+                             <th>Solde DOT</th>
+                             <th>Solde LINK</th>
+                             <th>Solde MATIC</th>
+                             <th>Solde SOL</th>
+                             <th>Solde AVAX</th>
+                             <th>Solde UNI</th>
+                             <th>Solde AAVE</th>
+                             <th>BTC Staking</th>
+                             <th>ETH Staking</th>
+                             <th>ADA Staking</th>
+                             <th>DOT Staking</th>
+                             <th>SOL Staking</th>
+                             <th>AVAX Staking</th>
+                             <th>Total Crypto €</th>
+                             <th>Total Staking €</th>
+                             <th>Solde Principal €</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            users.forEach(user => {
+                                 const balanceEURX = user.balances?.EURX || 0;
+                 const balanceUSDT = user.balances?.USDT || 0;
+                 const balanceBTC = user.balances?.BTC || 0;
+                 const balanceETH = user.balances?.ETH || 0;
+                 const balanceADA = user.balances?.ADA || 0;
+                 const balanceDOT = user.balances?.DOT || 0;
+                 const balanceLINK = user.balances?.LINK || 0;
+                 const balanceMATIC = user.balances?.MATIC || 0;
+                 const balanceSOL = user.balances?.SOL || 0;
+                 const balanceAVAX = user.balances?.AVAX || 0;
+                 const balanceUNI = user.balances?.UNI || 0;
+                 const balanceAAVE = user.balances?.AAVE || 0;
+                 const balanceBTCStaked = user.balances?.BTC_STAKED || 0;
+                 const balanceETHStaked = user.balances?.ETH_STAKED || 0;
+                 const balanceADAStaked = user.balances?.ADA_STAKED || 0;
+                 const balanceDOTStaked = user.balances?.DOT_STAKED || 0;
+                 const balanceSOLStaked = user.balances?.SOL_STAKED || 0;
+                 const balanceAVAXStaked = user.balances?.AVAX_STAKED || 0;
+                 const totalCryptoEUR = user.balances?.TOTAL_CRYPTO_EUR || 0;
+                 const totalStakedEUR = user.balances?.TOTAL_STAKED_EUR || 0;
+                 const totalBalanceEUR = user.balances?.TOTAL_BALANCE_EUR || 0;
+
+                tableHTML += `
+                    <tr data-user-id="${user.id}">
+                        <td>${user.id}</td>
+                        <td>${user.firstName} ${user.lastName}</td>
+                        <td>${user.email}</td>
+                                                 <td>
+                             <input type="number" class="balance-input" 
+                                    value="${balanceEURX.toFixed(6)}" 
+                                    step="0.000001" 
+                                    data-currency="EURX" 
+                                    data-user-id="${user.id}"
+                                    onchange="updateBalance('${user.id}', 'EURX', this.value)">
+                             <span class="balance-display">€</span>
+                         </td>
+                         <td>
+                             <input type="number" class="balance-input" 
+                                    value="${balanceUSDT.toFixed(6)}" 
+                                    step="0.000001" 
+                                    data-currency="USDT" 
+                                    data-user-id="${user.id}"
+                                    onchange="updateBalance('${user.id}', 'USDT', this.value)">
+                             <span class="balance-display">$</span>
+                         </td>
+                        <td>
+                            <input type="number" class="balance-input" 
+                                   value="${balanceBTC.toFixed(8)}" 
+                                   step="0.00000001" 
+                                   data-currency="BTC" 
+                                   data-user-id="${user.id}"
+                                   onchange="updateBalance('${user.id}', 'BTC', this.value)">
+                            <span class="balance-display">₿</span>
+                        </td>
+                                                 <td>
+                             <input type="number" class="balance-input" 
+                                    value="${balanceETH.toFixed(8)}" 
+                                    step="0.00000001" 
+                                    data-currency="ETH" 
+                                    data-user-id="${user.id}"
+                                    onchange="updateBalance('${user.id}', 'ETH', this.value)">
+                             <span class="balance-display">Ξ</span>
+                         </td>
+                         <td>
+                             <input type="number" class="balance-input" 
+                                    value="${balanceADA.toFixed(6)}" 
+                                    step="0.000001" 
+                                    data-currency="ADA" 
+                                    data-user-id="${user.id}"
+                                    onchange="updateBalance('${user.id}', 'ADA', this.value)">
+                             <span class="balance-display">₳</span>
+                         </td>
+                         <td>
+                             <input type="number" class="balance-input" 
+                                    value="${balanceDOT.toFixed(6)}" 
+                                    step="0.000001" 
+                                    data-currency="DOT" 
+                                    data-user-id="${user.id}"
+                                    onchange="updateBalance('${user.id}', 'DOT', this.value)">
+                             <span class="balance-display">●</span>
+                         </td>
+                         <td>
+                             <input type="number" class="balance-input" 
+                                    value="${balanceLINK.toFixed(6)}" 
+                                    step="0.000001" 
+                                    data-currency="LINK" 
+                                    data-user-id="${user.id}"
+                                    onchange="updateBalance('${user.id}', 'LINK', this.value)">
+                             <span class="balance-display">🔗</span>
+                         </td>
+                         <td>
+                             <input type="number" class="balance-input" 
+                                    value="${balanceMATIC.toFixed(6)}" 
+                                    step="0.000001" 
+                                    data-currency="MATIC" 
+                                    data-user-id="${user.id}"
+                                    onchange="updateBalance('${user.id}', 'MATIC', this.value)">
+                             <span class="balance-display">🔷</span>
+                         </td>
+                         <td>
+                             <input type="number" class="balance-input" 
+                                    value="${balanceSOL.toFixed(6)}" 
+                                    step="0.000001" 
+                                    data-currency="SOL" 
+                                    data-user-id="${user.id}"
+                                    onchange="updateBalance('${user.id}', 'SOL', this.value)">
+                             <span class="balance-display">◎</span>
+                         </td>
+                         <td>
+                             <input type="number" class="balance-input" 
+                                    value="${balanceAVAX.toFixed(6)}" 
+                                    step="0.000001" 
+                                    data-currency="AVAX" 
+                                    data-user-id="${user.id}"
+                                    onchange="updateBalance('${user.id}', 'AVAX', this.value)">
+                             <span class="balance-display">❄️</span>
+                         </td>
+                         <td>
+                             <input type="number" class="balance-input" 
+                                    value="${balanceUNI.toFixed(6)}" 
+                                    step="0.000001" 
+                                    data-currency="UNI" 
+                                    data-user-id="${user.id}"
+                                    onchange="updateBalance('${user.id}', 'UNI', this.value)">
+                             <span class="balance-display">🦄</span>
+                         </td>
+                         <td>
+                             <input type="number" class="balance-input" 
+                                    value="${balanceAAVE.toFixed(6)}" 
+                                    step="0.000001" 
+                                    data-currency="AAVE" 
+                                    data-user-id="${user.id}"
+                                    onchange="updateBalance('${user.id}', 'AAVE', this.value)">
+                             <span class="balance-display">👻</span>
+                         </td>
+                         <td>
+                             <input type="number" class="balance-input" 
+                                    value="${balanceBTCStaked.toFixed(8)}" 
+                                    step="0.00000001" 
+                                    data-currency="BTC_STAKED" 
+                                    data-user-id="${user.id}"
+                                    onchange="updateBalance('${user.id}', 'BTC_STAKED', this.value)">
+                             <span class="balance-display">₿</span>
+                         </td>
+                         <td>
+                             <input type="number" class="balance-input" 
+                                    value="${balanceETHStaked.toFixed(8)}" 
+                                    step="0.00000001" 
+                                    data-currency="ETH_STAKED" 
+                                    data-user-id="${user.id}"
+                                    onchange="updateBalance('${user.id}', 'ETH_STAKED', this.value)">
+                             <span class="balance-display">Ξ</span>
+                         </td>
+                         <td>
+                             <input type="number" class="balance-input" 
+                                    value="${balanceADAStaked.toFixed(6)}" 
+                                    step="0.000001" 
+                                    data-currency="ADA_STAKED" 
+                                    data-user-id="${user.id}"
+                                    onchange="updateBalance('${user.id}', 'ADA_STAKED', this.value)">
+                             <span class="balance-display">₳</span>
+                         </td>
+                         <td>
+                             <input type="number" class="balance-input" 
+                                    value="${balanceDOTStaked.toFixed(6)}" 
+                                    step="0.000001" 
+                                    data-currency="DOT_STAKED" 
+                                    data-user-id="${user.id}"
+                                    onchange="updateBalance('${user.id}', 'DOT_STAKED', this.value)">
+                             <span class="balance-display">●</span>
+                         </td>
+                         <td>
+                             <input type="number" class="balance-input" 
+                                    value="${balanceSOLStaked.toFixed(6)}" 
+                                    step="0.000001" 
+                                    data-currency="SOL_STAKED" 
+                                    data-user-id="${user.id}"
+                                    onchange="updateBalance('${user.id}', 'SOL_STAKED', this.value)">
+                             <span class="balance-display">◎</span>
+                         </td>
+                         <td>
+                             <input type="number" class="balance-input" 
+                                    value="${balanceAVAXStaked.toFixed(6)}" 
+                                    step="0.000001" 
+                                    data-currency="AVAX_STAKED" 
+                                    data-user-id="${user.id}"
+                                    onchange="updateBalance('${user.id}', 'AVAX_STAKED', this.value)">
+                             <span class="balance-display">❄️</span>
+                         </td>
+                         <td style="background: #E8F5E8; font-weight: bold; text-align: right;">
+                             €${totalCryptoEUR.toFixed(2)}
+                         </td>
+                         <td style="background: #FFF3CD; font-weight: bold; text-align: right;">
+                             €${totalStakedEUR.toFixed(2)}
+                         </td>
+                         <td style="background: #D1ECF1; font-weight: bold; text-align: right;">
+                             €${totalBalanceEUR.toFixed(2)}
+                         </td>
+                        <td>
+                            <span class="status-badge status-${user.status}">
+                                ${user.status === 'active' ? 'Actif' : 'Inactif'}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-small btn-success" onclick="saveUserBalances('${user.id}')">
+                                    💾 Sauvegarder
+                                </button>
+                                <button class="btn btn-small btn-warning" onclick="resetUserBalances('${user.id}')">
+                                    🔄 Reset
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = tableHTML;
+        }
+
+        // Mettre à jour un solde
+        function updateBalance(userId, currency, value) {
+            const newValue = parseFloat(value) || 0;
+            const user = balanceManager.getUserById(userId);
+            
+            if (user) {
+                const oldValue = user.balances?.[currency] || 0;
+                const change = newValue - oldValue;
+                
+                // Marquer comme modifié
+                const input = document.querySelector(`input[data-user-id="${userId}"][data-currency="${currency}"]`);
+                input.classList.add('updated');
+                
+                // Ajouter aux changements en attente
+                if (!pendingChanges.has(userId)) {
+                    pendingChanges.set(userId, {});
+                }
+                pendingChanges.get(userId)[currency] = newValue;
+                
+                // Mettre à jour l'affichage du changement
+                const changeElement = input.parentElement.querySelector('.balance-change');
+                if (changeElement) {
+                    changeElement.remove();
+                }
+                
+                if (change !== 0) {
+                    const changeSpan = document.createElement('span');
+                    changeSpan.className = `balance-change ${change > 0 ? 'positive' : 'negative'}`;
+                    changeSpan.textContent = `${change > 0 ? '+' : ''}${change.toFixed(currency === 'EUR' || currency === 'USD' ? 2 : 8)}`;
+                    input.parentElement.appendChild(changeSpan);
+                }
+                
+                updateSyncStatus();
+            }
+        }
+
+        // Sauvegarder les soldes d'un utilisateur
+        function saveUserBalances(userId) {
+            const changes = pendingChanges.get(userId);
+            if (changes) {
+                balanceManager.updateUserBalances(userId, changes);
+                pendingChanges.delete(userId);
+                
+                // Retirer la classe updated des inputs
+                const inputs = document.querySelectorAll(`input[data-user-id="${userId}"]`);
+                inputs.forEach(input => input.classList.remove('updated'));
+                
+                // Retirer les indicateurs de changement
+                const changes = document.querySelectorAll(`input[data-user-id="${userId}"] + .balance-display + .balance-change`);
+                changes.forEach(change => change.remove());
+                
+                updateSyncStatus();
+                loadBalanceData();
+                
+                // Synchroniser avec le dashboard principal
+                syncWithMainDashboard(userId, changes);
+            }
+        }
+
+        // Réinitialiser les soldes d'un utilisateur
+        function resetUserBalances(userId) {
+            if (confirm(`Réinitialiser tous les soldes de l'utilisateur ${userId} ?`)) {
+                balanceManager.resetUserBalances(userId);
+                pendingChanges.delete(userId);
+                
+                // Retirer la classe updated des inputs
+                const inputs = document.querySelectorAll(`input[data-user-id="${userId}"]`);
+                inputs.forEach(input => input.classList.remove('updated'));
+                
+                // Retirer les indicateurs de changement
+                const changes = document.querySelectorAll(`input[data-user-id="${userId}"] + .balance-display + .balance-change`);
+                changes.forEach(change => change.remove());
+                
+                updateSyncStatus();
+                loadBalanceData();
+                
+                // Synchroniser avec le dashboard principal
+                syncWithMainDashboard(userId, { EUR: 0, USD: 0, BTC: 0, ETH: 0 });
+            }
+        }
+
+        // Appliquer une action en masse
+        function applyBulkAction() {
+            const action = document.getElementById('bulkAction').value;
+            const amount = parseFloat(document.getElementById('bulkAmount').value) || 0;
+            const currency = document.getElementById('bulkCurrency').value;
+            
+            if (amount === 0) {
+                alert('Veuillez entrer un montant valide');
+                return;
+            }
+            
+            const users = balanceManager.getAllUsersWithBalances();
+            let changesCount = 0;
+            
+            users.forEach(user => {
+                const currentBalance = user.balances?.[currency] || 0;
+                let newBalance = currentBalance;
+                
+                switch (action) {
+                    case 'add':
+                        newBalance = currentBalance + amount;
+                        break;
+                    case 'subtract':
+                        newBalance = Math.max(0, currentBalance - amount);
+                        break;
+                    case 'multiply':
+                        newBalance = currentBalance * amount;
+                        break;
+                    case 'set':
+                        newBalance = amount;
+                        break;
+                }
+                
+                if (newBalance !== currentBalance) {
+                    balanceManager.updateUserBalances(user.id, { [currency]: newBalance });
+                    changesCount++;
+                }
+            });
+            
+            if (changesCount > 0) {
+                alert(`${changesCount} soldes mis à jour avec succès !`);
+                loadBalanceData();
+                
+                // Synchroniser avec le dashboard principal
+                syncAllWithMainDashboard();
+            } else {
+                alert('Aucun changement effectué');
+            }
+        }
+
+        // Réinitialiser tous les soldes
+        function resetAllBalances() {
+            showConfirmModal(
+                'Réinitialiser tous les soldes',
+                'Cette action réinitialisera tous les soldes de tous les utilisateurs à 0. Êtes-vous sûr ?',
+                () => {
+                    balanceManager.resetAllBalances();
+                    loadBalanceData();
+                    syncAllWithMainDashboard();
+                    alert('Tous les soldes ont été réinitialisés');
+                }
+            );
+        }
+
+        // Filtrer les utilisateurs
+        function filterUsers() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const rows = document.querySelectorAll('.users-table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // Actualiser les données
+        function refreshData() {
+            loadBalanceData();
+            alert('Données actualisées');
+        }
+
+        // Exporter les soldes
+        function exportBalances() {
+            balanceManager.exportBalances();
+            alert('Export des soldes créé ! Vérifiez la console pour le lien de téléchargement.');
+        }
+
+        // Mettre à jour le statut de synchronisation
+        function updateSyncStatus() {
+            const syncStatus = document.getElementById('syncStatus');
+            const pendingCount = pendingChanges.size;
+            
+            if (pendingCount === 0) {
+                syncStatus.className = 'sync-status synced';
+                syncStatus.innerHTML = '✅ Synchronisé';
+            } else {
+                syncStatus.className = 'sync-status pending';
+                syncStatus.innerHTML = `⏳ ${pendingCount} modification(s) en attente`;
+            }
+        }
+
+        // Démarrer la synchronisation en temps réel
+        function startRealtimeSync() {
+            syncInterval = setInterval(() => {
+                const now = Date.now();
+                if (now - lastSyncTime > 5000) { // Synchroniser toutes les 5 secondes
+                    syncAllWithMainDashboard();
+                    lastSyncTime = now;
+                }
+            }, 1000);
+        }
+
+        // Synchroniser avec le dashboard principal
+        function syncWithMainDashboard(userId, balances) {
+            // Émettre un événement personnalisé pour la synchronisation
+            const event = new CustomEvent('balanceUpdate', {
+                detail: { userId, balances, timestamp: Date.now() }
+            });
+            window.dispatchEvent(event);
+            
+            // Stocker dans localStorage pour synchronisation cross-tab
+            const syncData = {
+                userId,
+                balances,
+                timestamp: Date.now(),
+                source: 'admin-balance'
+            };
+            localStorage.setItem('lloyds_balance_sync', JSON.stringify(syncData));
+        }
+
+        // Synchroniser tous les utilisateurs avec le dashboard principal
+        function syncAllWithMainDashboard() {
+            const users = balanceManager.getAllUsersWithBalances();
+            users.forEach(user => {
+                if (user.balances) {
+                    syncWithMainDashboard(user.id, user.balances);
+                }
+            });
+        }
+
+        // Afficher une modal de confirmation
+        function showConfirmModal(title, message, onConfirm) {
+            document.getElementById('modalBody').innerHTML = `
+                <h4>${title}</h4>
+                <p>${message}</p>
+            `;
+            
+            document.getElementById('confirmBtn').onclick = () => {
+                onConfirm();
+                closeModal();
+            };
+            
+            document.getElementById('confirmModal').style.display = 'block';
+        }
+
+        // Fermer la modal
+        function closeModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+        }
+
+        // Nettoyer à la fermeture de la page
+        window.addEventListener('beforeunload', () => {
+            if (syncInterval) {
+                clearInterval(syncInterval);
+            }
+        });
+    </script>
+</body>
+</html>

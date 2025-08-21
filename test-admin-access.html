@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Accès Admin - Lloyds GO!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #007A3D 0%, #005A2C 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .test-section {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 4px solid #28A745;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #28A745;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        .btn-danger {
+            background: #DC3545;
+        }
+        .btn-danger:hover {
+            background: #C82333;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .status.success {
+            background: rgba(40, 167, 69, 0.3);
+            border: 1px solid #28A745;
+        }
+        .status.error {
+            background: rgba(220, 53, 69, 0.3);
+            border: 1px solid #DC3545;
+        }
+        .status.warning {
+            background: rgba(255, 193, 7, 0.3);
+            border: 1px solid #FFC107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test d'Accès Admin - Lloyds GO!</h1>
+        
+        <div class="test-section">
+            <h2>📋 URLs des Pages Admin</h2>
+            <p>Voici les liens vers toutes les pages d'administration :</p>
+            
+            <a href="admin.html" class="btn" target="_blank">
+                🔧 Administration Générale
+            </a>
+            
+            <a href="admin-balance.html" class="btn" target="_blank">
+                💰 Gestion des Soldes
+            </a>
+            
+            <a href="admin-complete.html" class="btn" target="_blank">
+                📊 Administration Complète
+            </a>
+            
+            <a href="admin-simple.html" class="btn" target="_blank">
+                ⚙️ Administration Simple
+            </a>
+        </div>
+
+        <div class="test-section">
+            <h2>🔍 Test de l'API Backend</h2>
+            <button onclick="testAPI()" class="btn">Tester l'API</button>
+            <div id="apiStatus" class="status"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>👥 Test des Utilisateurs</h2>
+            <button onclick="testUsers()" class="btn">Vérifier les Utilisateurs</button>
+            <div id="usersStatus" class="status"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>💰 Test des Soldes</h2>
+            <button onclick="testBalances()" class="btn">Vérifier les Soldes</button>
+            <div id="balancesStatus" class="status"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🌐 Test de Connectivité</h2>
+            <button onclick="testConnectivity()" class="btn">Tester la Connectivité</button>
+            <div id="connectivityStatus" class="status"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 Résultats des Tests</h2>
+            <div id="testResults"></div>
+        </div>
+    </div>
+
+    <script>
+        let testResults = [];
+
+        function addResult(test, status, message) {
+            testResults.push({ test, status, message });
+            updateResults();
+        }
+
+        function updateResults() {
+            const container = document.getElementById('testResults');
+            container.innerHTML = testResults.map(result => `
+                <div class="status ${result.status}">
+                    <strong>${result.test}:</strong> ${result.message}
+                </div>
+            `).join('');
+        }
+
+        async function testAPI() {
+            const statusDiv = document.getElementById('apiStatus');
+            statusDiv.innerHTML = '🔄 Test en cours...';
+            statusDiv.className = 'status warning';
+
+            try {
+                const response = await fetch('/.netlify/functions/api/api/health');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    statusDiv.innerHTML = '✅ API fonctionnelle - ' + data.status;
+                    statusDiv.className = 'status success';
+                    addResult('API Backend', 'success', 'API opérationnelle');
+                } else {
+                    throw new Error('Erreur API');
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '❌ Erreur API - ' + error.message;
+                statusDiv.className = 'status error';
+                addResult('API Backend', 'error', 'API non accessible');
+            }
+        }
+
+        async function testUsers() {
+            const statusDiv = document.getElementById('usersStatus');
+            statusDiv.innerHTML = '🔄 Vérification des utilisateurs...';
+            statusDiv.className = 'status warning';
+
+            try {
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                if (users.length > 0) {
+                    statusDiv.innerHTML = `✅ ${users.length} utilisateur(s) trouvé(s)`;
+                    statusDiv.className = 'status success';
+                    addResult('Utilisateurs', 'success', `${users.length} utilisateurs enregistrés`);
+                } else {
+                    statusDiv.innerHTML = '⚠️ Aucun utilisateur trouvé - Créez un compte d\'abord';
+                    statusDiv.className = 'status warning';
+                    addResult('Utilisateurs', 'warning', 'Aucun utilisateur enregistré');
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '❌ Erreur lors de la vérification des utilisateurs';
+                statusDiv.className = 'status error';
+                addResult('Utilisateurs', 'error', 'Erreur de vérification');
+            }
+        }
+
+        async function testBalances() {
+            const statusDiv = document.getElementById('balancesStatus');
+            statusDiv.innerHTML = '🔄 Vérification des soldes...';
+            statusDiv.className = 'status warning';
+
+            try {
+                const balances = JSON.parse(localStorage.getItem('balances') || '{}');
+                const balanceCount = Object.keys(balances).length;
+                
+                if (balanceCount > 0) {
+                    statusDiv.innerHTML = `✅ ${balanceCount} solde(s) configuré(s)`;
+                    statusDiv.className = 'status success';
+                    addResult('Soldes', 'success', `${balanceCount} soldes configurés`);
+                } else {
+                    statusDiv.innerHTML = '⚠️ Aucun solde configuré - Utilisez l\'admin pour en ajouter';
+                    statusDiv.className = 'status warning';
+                    addResult('Soldes', 'warning', 'Aucun solde configuré');
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '❌ Erreur lors de la vérification des soldes';
+                statusDiv.className = 'status error';
+                addResult('Soldes', 'error', 'Erreur de vérification');
+            }
+        }
+
+        async function testConnectivity() {
+            const statusDiv = document.getElementById('connectivityStatus');
+            statusDiv.innerHTML = '🔄 Test de connectivité...';
+            statusDiv.className = 'status warning';
+
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/ping');
+                if (response.ok) {
+                    statusDiv.innerHTML = '✅ Connectivité internet OK - API externe accessible';
+                    statusDiv.className = 'status success';
+                    addResult('Connectivité', 'success', 'Internet et API externes OK');
+                } else {
+                    throw new Error('API externe non accessible');
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '❌ Problème de connectivité - ' + error.message;
+                statusDiv.className = 'status error';
+                addResult('Connectivité', 'error', 'Problème de connectivité');
+            }
+        }
+
+        // Tests automatiques au chargement
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testAPI();
+                testUsers();
+                testBalances();
+                testConnectivity();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

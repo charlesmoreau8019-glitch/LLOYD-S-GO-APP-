@@ -1,0 +1,43 @@
+{
+  "name": "lloyds-go-app",
+  "version": "1.0.0",
+  "description": "Application bancaire et crypto moderne - Lloyds GO!",
+  "main": "server.js",
+  "scripts": {
+    "start": "node functions/api.js",
+    "dev": "nodemon functions/api.js",
+    "build": "echo 'No build step required'",
+    "build:dev": "echo 'No build step required'"
+  },
+  "keywords": ["banking", "crypto", "fintech", "webapp"],
+  "author": "Lloyds GO! Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "express-rate-limit": "^7.1.5",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "dotenv": "^16.3.1",
+    "axios": "^1.6.2",
+    "serverless-http": "^3.2.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "css-loader": "^6.8.1",
+    "style-loader": "^3.3.3",
+    "html-webpack-plugin": "^5.5.3",
+    "mini-css-extract-plugin": "^2.7.6",
+    "terser-webpack-plugin": "^5.3.9",
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.1"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}

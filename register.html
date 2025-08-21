@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lloyd's GO! - Inscription</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #007A3D 0%, #005A2C 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .register-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #007A3D, #00A651);
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #007A3D, #00A651);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            box-shadow: 0 8px 16px rgba(0, 122, 61, 0.3);
+        }
+
+        .logo span {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo-section h1 {
+            color: #212529;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .logo-section p {
+            color: #6C757D;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #212529;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #E9ECEF;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #F8F9FA;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #007A3D;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0, 122, 61, 0.1);
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6C757D;
+            font-size: 18px;
+        }
+
+        .password-toggle:hover {
+            color: #007A3D;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #007A3D, #00A651);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 122, 61, 0.3);
+        }
+
+        .register-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .login-link a {
+            color: #007A3D;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #FEE;
+            color: #C53030;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .success-message {
+            background: #F0FFF4;
+            color: #2F855A;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #007A3D;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .register-container {
+                padding: 30px 20px;
+                max-width: 100%;
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .logo {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .logo-section h1 {
+                font-size: 22px;
+            }
+            
+            .input-field {
+                padding: 16px 15px;
+                font-size: 16px;
+                border-radius: 12px;
+            }
+            
+            .password-toggle {
+                right: 12px;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .register-btn {
+                padding: 16px;
+                font-size: 16px;
+                border-radius: 12px;
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo-section">
+            <div class="logo">
+                <span>L</span>
+            </div>
+            <h1>Lloyd's GO!</h1>
+            <p>Créez votre compte sécurisé</p>
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            Erreur lors de l'inscription. Veuillez réessayer.
+        </div>
+
+        <div class="success-message" id="successMessage">
+            Inscription réussie ! Redirection en cours...
+        </div>
+
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="firstName">Prénom</label>
+                <input 
+                    type="text" 
+                    id="firstName" 
+                    class="input-field" 
+                    placeholder="Votre prénom"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="lastName">Nom</label>
+                <input 
+                    type="text" 
+                    id="lastName" 
+                    class="input-field" 
+                    placeholder="Votre nom"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="email">Adresse e-mail</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    class="input-field" 
+                    placeholder="votre@email.com"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <div class="password-container">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="input-field" 
+                        placeholder="Votre mot de passe"
+                        required
+                        minlength="6"
+                    >
+                    <button type="button" class="password-toggle" onclick="togglePassword()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirmer le mot de passe</label>
+                <div class="password-container">
+                    <input 
+                        type="password" 
+                        id="confirmPassword" 
+                        class="input-field" 
+                        placeholder="Confirmez votre mot de passe"
+                        required
+                        minlength="6"
+                    >
+                    <button type="button" class="password-toggle" onclick="toggleConfirmPassword()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="register-btn">
+                Créer mon compte
+            </button>
+        </form>
+
+        <div class="login-link">
+            <p>Déjà un compte ? <a href="index.html">Se connecter</a></p>
+        </div>
+
+        <div class="back-link">
+            <a href="index.html">
+                ← Retour au dashboard
+            </a>
+        </div>
+    </div>
+
+    <script src="js/userManager.js"></script>
+    <script>
+        // Fonction pour afficher/masquer le mot de passe
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const toggleBtn = passwordField.parentElement.querySelector('.password-toggle');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                        <line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                `;
+            } else {
+                passwordField.type = 'password';
+                toggleBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                `;
+            }
+        }
+
+        // Fonction pour afficher/masquer la confirmation du mot de passe
+        function toggleConfirmPassword() {
+            const passwordField = document.getElementById('confirmPassword');
+            const toggleBtn = passwordField.parentElement.querySelector('.password-toggle');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                        <line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                `;
+            } else {
+                passwordField.type = 'password';
+                toggleBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                `;
+            }
+        }
+
+        // Gestion du formulaire d'inscription
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            // Masquer les messages précédents
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            // Validation
+            if (!firstName || !lastName || !email || !password) {
+                errorMessage.textContent = 'Tous les champs sont obligatoires.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                errorMessage.textContent = 'Les mots de passe ne correspondent pas.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            if (password.length < 6) {
+                errorMessage.textContent = 'Le mot de passe doit contenir au moins 6 caractères.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            // Utiliser le gestionnaire d'utilisateurs pour l'inscription
+            const result = registerUser(firstName, lastName, email, password);
+            
+            console.log('Résultat de l\'inscription:', result);
+            
+            if (result.success) {
+                // Inscription réussie
+                successMessage.style.display = 'block';
+                
+                // Vider le formulaire
+                document.getElementById('registerForm').reset();
+                
+                // Redirection après 2 secondes
+                setTimeout(() => {
+                    alert('Inscription réussie ! Vous pouvez maintenant vous connecter.');
+                    window.location.href = 'index.html';
+                }, 2000);
+            } else {
+                // Inscription échouée
+                errorMessage.textContent = result.error;
+                errorMessage.style.display = 'block';
+            }
+        });
+
+        // Animation d'entrée
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.register-container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                container.style.transition = 'all 0.5s ease';
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>
